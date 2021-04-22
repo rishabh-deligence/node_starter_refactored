@@ -8,6 +8,7 @@ import {
 export default Express
     .Router()
     // Post
+    .post('/signup', upload.uploadFile, controller.signup)
 
     // Fetch
 

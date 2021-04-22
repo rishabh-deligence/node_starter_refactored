@@ -68,6 +68,15 @@ const encryptString = text => {
 };
 
 
+const generate6DigitOTP = () => {
+    var digits = '0123456789';
+    let OTP = '';
+    for (let i = 0; i < 6; i++) {
+        OTP += digits[Math.floor(Math.random() * 10)];
+    }
+    return OTP;
+}
+
 /**
  *
  *
@@ -120,5 +129,6 @@ module.exports = {
     encryptString,
     decryptString,
     dbValueSanitize,
-    errorMailMsg
+    errorMailMsg,
+    generate6DigitOTP
 };

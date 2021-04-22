@@ -8,7 +8,6 @@ export class UserServices {
         const _user = new User();
         _user.model.find({
             email,
-            isActive: true,
         }, (err, result) => {
             if (err) {
                 return done(err);
@@ -22,21 +21,9 @@ export class UserServices {
     }
 
     insertUser(userInfo, done) {
-        const {
-            email,
-        } = userInfo;
-
-        const insertOptions = {
-            upsert: true,
-            new: true,
-            setDefaultsOnInsert: true,
-        };
-
         const _user = new User();
 
-        _user.model.findOneAndUpdate({
-            email,
-        }, userInfo, insertOptions, (err, doc) => {
+        _user.model.create(userInfo, (err, doc) => {
             if (err) {
                 return done(err);
             }

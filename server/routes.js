@@ -1,4 +1,4 @@
-import adminRouter from './api/v1/controllers/admin/routes';
+import userRouter from './api/v1/controllers/user/routes';
 
 /**
  *
@@ -7,6 +7,6 @@ import adminRouter from './api/v1/controllers/admin/routes';
  * @param {any} app
  */
 export default function routes(app) {
-    app.use('/v1/admin', adminRouter);
+    app.use('/v1/user', userRouter);
     return app;
 }

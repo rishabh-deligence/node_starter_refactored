@@ -11,8 +11,8 @@ import Mongoose from 'mongoose';
 import { generateJwt } from '../../../../helper/passportStrategy';
 import mailer from '../../../../helper/mailer';
 import {
-    encryptString,
-    decryptString,
+    encryptPass,
+    generate6DigitOTP
 } from '../../../../helper/util';
 import Response from '../../models/response';
 import UserServices from '../../services/user.services';
@@ -77,7 +77,9 @@ export class UserController {
             password: Joi.string().required().trim(),
             mobile: Joi.string().required().trim(),
             gender: Joi.string().valid('Male', 'Female').required(),
-            profile_picture: Joi.string().optional().trim(), // needed for social media login
+            profile_picture: Joi.string().optional().trim(),
+            selfie: Joi.string().optional().trim(),
+            identity: Joi.string().optional().trim(),
             about_me: Joi.string().max(250).optional(),
             preferences: Joi.array().optional(),
             currency: Joi.string().valid('$', '£', '€').required(),
@@ -92,7 +94,7 @@ export class UserController {
          * REF: Async waterfall
          * https://caolan.github.io/async/v3/docs.html#waterfall
          */
-        
+
         Async.waterfall([
             cb => Joi.validate(request.body, validationSchema, cb),
             (validationResult, cb) => {
@@ -133,7 +135,7 @@ export class UserController {
 
                 UserServices.insertUser(insertObject, (err, user) => {
                     if (err) {
-
+                        return cb(err);
                     }
                     return cb(null, user, validationResult);
                 });
@@ -153,6 +155,7 @@ export class UserController {
                 const projection = {
                     password: 0,
                     otpTime: 0,
+                    otp: 0,
                     createdAt: 0,
                     updatedAt: 0,
                     identity: 0,
@@ -166,23 +169,11 @@ export class UserController {
                     }
                     return cb(null, updatedUser);
                 });
-            },
-            (user, cb) => {
-                const { mobile, name, otp } = user;
-                const body = `Hello ${name}, Your OTP for verification is ${otp}`;
-                sendSms(body, mobile, (error, messageId) => {
-                    if (error) {
-                        // return cb(error);
-                        return cb(null, user);
-                    }
-                    return cb(null, user);
-                });
             }
         ], (err, result) => {
             if (err) {
                 return next(err);
             }
-            result = _.omit(result, ["password", "otp", "otpTime"]);
             return response.json(new Response(result, `Account created successfully`));
         });
     }

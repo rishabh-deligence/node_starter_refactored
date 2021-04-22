@@ -80,6 +80,9 @@ class ExpressServer {
     }
     configureDb(dbUrl) {
         return new Promise((resolve, reject) => {
+            Mongoose.set('useNewUrlParser', true);
+            Mongoose.set('useFindAndModify', false);
+            Mongoose.set('useCreateIndex', true);
             Mongoose.connect(dbUrl, err => {
                 if (err) {
                     console.log(`Error in mongodb connection ${err.message}`);
